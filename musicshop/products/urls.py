@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from musicshop.products.views import ProductListView, ProductDetailView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^products/', include('musicshop.products.urls', namespace='products')),
+    url(r'^$', ProductListView.as_view(), name='list'),
+    url(r'^(?P<pk>[0-9]+)/$', ProductDetailView.as_view(), name='detail'),
 ]

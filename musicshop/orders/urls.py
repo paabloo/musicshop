@@ -15,9 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from musicshop.orders.views import AddToCartView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^products/', include('musicshop.products.urls', namespace='products')),
-    url(r'^orders/', include('musicshop.orders.urls', namespace='orders')),
+    url(r'^add-to-cart/$', AddToCartView.as_view(), name='add_to_cart'),
 ]

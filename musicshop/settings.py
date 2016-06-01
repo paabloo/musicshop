@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'musicshop',
     'musicshop.products',
+    'musicshop.orders',
 ]
 
 MIDDLEWARE_CLASSES = [

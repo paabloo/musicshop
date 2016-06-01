@@ -7,6 +7,15 @@
 </head>
 <body>
     <div class="container">
+        {% if messages %}
+            <div class="row">
+                {% for message in messages %}
+                <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </div>
 </body>

@@ -2,8 +2,29 @@
 
 
 {% block content %}
-    {{ object.name }}
-    {{ object.category }}
-    {{ object.price }}
-    {{ object.quantity }}
+<div class="row">
+    <div class="card col-sm-4">
+      <div class="card-block">
+        <h4 class="card-title">{{ object.name }}</h4>
+        <h6 class="card-subtitle text-muted">{{ object.category }}</h6>
+      </div>
+      <div class="card-block">
+        <p class="card-text">
+            Tu będzie opis
+            <ul>
+                <li>Cena: {{ object.price }}</li>
+                <li>Ilość: {{ object.quantity }}</li>
+            </ul>
+        </p>
+        <form method="post" action="{% url "orders:add_to_cart" %}?next={{ object.get_absolute_url }}">
+            {% csrf_token %}
+            <input type="hidden" name="product_pk" value="{{ object.pk }}">
+            <input type="number" name="quantity" placeholder="Ilość" value="1">
+            <button class="btn btn-primary" type="submit">Dodaj do koszyka</button>
+        </form>
+        <a href="{% url "products:list" %}" class="card-link">Wróć</a>
+      </div>
+    </div>
+</div>
+
 {% endblock %}

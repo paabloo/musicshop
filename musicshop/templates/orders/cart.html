@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <table class="table table-striped">
+        {% for product in products %}
+            <tr>
+                <td>{{ product }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price_all }}</td>
+            </tr>
+        {% endfor %}
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    Total:
+                </td>
+                <td>
+                    {{ total }}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

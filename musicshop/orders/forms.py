@@ -6,6 +6,7 @@ class AddToCartForm(forms.Form):
 
     def clean_quantity(self):
         value = self.cleaned_data['quantity']
-        if 0 < value < 100:
+        if value > 0:
             return value
-        # dodanie bledu
+        else:
+            self.add_error('quantity', 'dupa')

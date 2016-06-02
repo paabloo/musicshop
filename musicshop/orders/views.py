@@ -1,12 +1,15 @@
 from django.http import HttpResponseRedirect
-from django.views.generic import RedirectView, FormView, TemplateView
+from django.views.generic import RedirectView, FormView, TemplateView, CreateView
 from django.contrib import messages
-from musicshop.orders.forms import AddToCartForm
+from musicshop.orders.forms import AddToCartForm, OrderForm
 from musicshop.products.models import Product
+from musicshop.orders.models import Order
+from musicshop.orders.forms import OrderForm
+from django.core.urlresolvers import reverse_lazy
 
-class AddToCartView_old(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        return self.request.GET['next']
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
 
 class AddToCartView(FormView):
     # template_name = 'add_to_cart.html'
@@ -16,12 +19,11 @@ class AddToCartView(FormView):
         pk = str(form.cleaned_data['product_pk'])
         quantity = form.cleaned_data['quantity']
         orders = self.request.session.get('orders', {})
-        print(type(pk))
         if pk not in orders:
             orders[pk] = 0
         orders[pk] += quantity
         self.request.session['orders'] = orders
-        messages.success(self.request, str(orders))
+        messages.success(self.request, "Dodano produkt")
         return super(AddToCartView, self).form_valid(form)
 
     def form_invalid(self, form):
@@ -30,6 +32,19 @@ class AddToCartView(FormView):
 
     def get_success_url(self):
         return self.request.GET['next']
+
+
+class RemoveFromCartView(RedirectView):
+    pattern_name = 'orders:cart'
+
+    def get(self, *args, **kwargs):
+        pk = self.request.GET.get('pk')
+        if pk and 'orders' in self.request.session:
+            orders = self.request.session['orders']
+            orders.pop(str(pk), None)
+            self.request.session['orders'] = orders
+            messages.success(self.request, 'Usunięto product')
+        return super(RemoveFromCartView, self).get(*args, **kwargs)
 
 
 class CartView(TemplateView):
@@ -49,3 +64,19 @@ class CartView(TemplateView):
             'total': sum(obj.price_all for obj in products)
         }
         return results
+
+
+def order_prepare_view(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            import pdb
+            pdb.set_trace()
+            form.instance
+            return HttpResponseRedirect(reverse_lazy('products:list'))
+    else:
+        form = OrderForm()
+
+    return render(request, 'orders/order_prepare.html', {'form': form})
+
+

@@ -70,13 +70,20 @@ def order_prepare_view(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             form.instance
+            messages.success(request, 'Złożono zamówienie')
             return HttpResponseRedirect(reverse_lazy('products:list'))
     else:
         form = OrderForm()
 
     return render(request, 'orders/order_prepare.html', {'form': form})
 
+
+class OrderPreperaView(CreateView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'orders/order_prepare.html'
+    success_url = reverse_lazy('products:list')
 

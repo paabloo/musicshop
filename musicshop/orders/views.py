@@ -4,11 +4,8 @@ from django.contrib import messages
 from musicshop.orders.forms import AddToCartForm, OrderForm
 from musicshop.products.models import Product
 from musicshop.orders.models import Order
-from musicshop.orders.forms import OrderForm
 from django.core.urlresolvers import reverse_lazy
-
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from .models import OrderProduct
 
 
 class AddToCartView(FormView):
@@ -27,7 +24,7 @@ class AddToCartView(FormView):
         return super(AddToCartView, self).form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Seler jest ładny!')
+        messages.error(self.request, 'Seler jest ladny!')
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -43,7 +40,7 @@ class RemoveFromCartView(RedirectView):
             orders = self.request.session['orders']
             orders.pop(str(pk), None)
             self.request.session['orders'] = orders
-            messages.success(self.request, 'Usunięto product')
+            messages.success(self.request, 'Usunieto product')
         return super(RemoveFromCartView, self).get(*args, **kwargs)
 
 
@@ -66,24 +63,29 @@ class CartView(TemplateView):
         return results
 
 
-def order_prepare_view(request):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            # import pdb
-            # pdb.set_trace()
-            form.instance
-            messages.success(request, 'Złożono zamówienie')
-            return HttpResponseRedirect(reverse_lazy('products:list'))
-    else:
-        form = OrderForm()
-
-    return render(request, 'orders/order_prepare.html', {'form': form})
-
-
 class OrderPreperaView(CreateView):
     model = Order
     form_class = OrderForm
     template_name = 'orders/order_prepare.html'
     success_url = reverse_lazy('products:list')
 
+    def form_valid(self, form):
+        result = super(OrderPreperaView, self).form_valid(form)
+        messages.success(self.request, 'Zlozono zamowienie')
+        orders = self.request.session['orders']
+        from musicshop.products.models import Product
+        products = Product.objects.in_bulk(orders)
+
+        for product_id, quantity in orders.items():
+            product_id = int(product_id)
+            op = OrderProduct()
+            op.product_id = product_id
+            op.quantity = quantity
+            op.order = form.instance
+            op.save()
+
+            products[product_id].quantity -= quantity
+            products[product_id].save()
+
+        del self.request.session['orders']
+        return result

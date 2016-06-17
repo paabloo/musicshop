@@ -15,12 +15,16 @@ class AddToCartView(FormView):
     def form_valid(self, form):
         pk = str(form.cleaned_data['product_pk'])
         quantity = form.cleaned_data['quantity']
-        orders = self.request.session.get('orders', {})
-        if pk not in orders:
-            orders[pk] = 0
-        orders[pk] += quantity
-        self.request.session['orders'] = orders
-        messages.success(self.request, "Dodano produkt")
+        product = Product.objects.get(pk=pk)
+        if product.quantity >= quantity:
+            orders = self.request.session.get('orders', {})
+            if pk not in orders:
+                orders[pk] = 0
+            orders[pk] += quantity
+            self.request.session['orders'] = orders
+            messages.success(self.request, "Dodano produkt")
+        else:
+            messages.error(self.request, "Nie ma tyle produktów co pan chce. Mniej pan weź. Max {}".format(product.quantity))
         return super(AddToCartView, self).form_valid(form)
 
     def form_invalid(self, form):

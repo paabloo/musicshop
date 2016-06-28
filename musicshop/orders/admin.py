@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import csv
 from django.contrib import admin
 from musicshop.orders.models import Order, OrderProduct

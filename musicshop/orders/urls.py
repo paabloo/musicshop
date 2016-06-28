@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import url
 from musicshop.orders.views import AddToCartView, CartView, RemoveFromCartView, OrderPreperaView
 

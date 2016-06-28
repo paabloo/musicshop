@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView, FormView, TemplateView, CreateView
 from django.contrib import messages

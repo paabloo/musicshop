@@ -19,6 +19,7 @@ class Product(models.Model):
     quantity = models.IntegerField()
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Towar'
         verbose_name_plural = 'Towary'
 
@@ -27,3 +28,4 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('products:detail', kwargs={'pk': self.pk})
+
